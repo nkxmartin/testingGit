@@ -94,7 +94,7 @@ try {
     $driver->switchTo()->frame($my_frame);
 
     $checkHomepage = $driver->wait(3,250)->until(WebDriverExpectedCondition:: elementTextContains(
-            WebDriverBy::xpath('//a[text()="Logout"]'), 'Home'));
+            WebDriverBy::xpath('//a[text()="Logout"]'), 'Logout'));
 
     if ($checkHomepage > 0){
         echo $checkHomepage . " \n";
