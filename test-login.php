@@ -86,6 +86,7 @@ try {
     if ($checkHomepage > 0){
         echo $checkHomepage . " \n";
         echo 'Login successfully!!';
+        echo 'Update 5';
         // terminate the session and close the browser
         $driver->quit();
     }elseif ($checkHomepage = 0){
