@@ -85,7 +85,7 @@ try {
 
     if ($checkHomepage > 0){
         echo $checkHomepage . " \n";
-        echo 'Login JUJU successfully!!';
+        echo 'Login successfully!!';
         // terminate the session and close the browser
         $driver->quit();
     }elseif ($checkHomepage = 0){
