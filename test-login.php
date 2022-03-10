@@ -5,7 +5,6 @@
 
 namespace Facebook\WebDriver;
 
-use DateTime;
 use Exception;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Chrome\ChromeDriver;
@@ -34,7 +33,7 @@ try {
 
     // write 'password' in the search box
     $driver->findElement(WebDriverBy::id('clrpasswd')) // find search input element
-        ->sendKeys('asdf12341'); // fill the search box
+        ->sendKeys('asdf1234'); // fill the search box
 
     echo " Entered password\n";  
 
@@ -44,12 +43,15 @@ try {
 
     // focus on captcha input box
     $driver->findElement(WebDriverBy::id('captcha'))->click();
-    sleep(1);
 
     $loginTime = time();
     while(time() - $loginTime < 6 ){
         echo "Sleep for 3 seconds to wait for manual captcha input\n"; 
         sleep(3);
+
+        // enter dummy 'captcha' into the captcha box
+        // $driver->findElement(WebDriverBy::id('captcha')) // find search input element
+        // ->sendKeys('1111'); // fill the search box
 
         $getCaptcha = $driver->findElement(WebDriverBy::id('captcha'))->getAttribute('value');
 
@@ -60,7 +62,7 @@ try {
             $driver->findElement(WebDriverBy::id('login'))->click();
 
             echo "Login in progress...\n";
-            sleep(1);
+            sleep(2);
 
             // to check error after clicked 'Login' button
             try {
@@ -70,7 +72,11 @@ try {
                     throw new Exception();
                 }
             }catch (\Exception $e){
-                throw new Exception("Error Message scraped: " . $isLoginError);
+                if (!empty($isLoginError)){
+                    throw new Exception($isLoginError);
+                }else{
+                    break;
+                }
             }
         }
     }
@@ -78,32 +84,34 @@ try {
     // validation for captcha entered or empty
     if (strlen(trim($getCaptcha)) < 4 && strlen(trim($getCaptcha)) != 0) {
         echo "Captcha entered: " . $getCaptcha . "\n";
-        throw new Exception("Captcha is invalid!\n");
+        throw new Exception("Captcha is invalid!");
     }
     elseif (strlen(trim($getCaptcha)) == 0) {
-        throw new Exception("Captcha is empty!\n");
+        throw new Exception("Captcha is empty!");
     }
+
+    // switch back into default frame
+    $driver->switchTo()->defaultContent();
 
     // find and switch the frame due to homepage having frame wrapping
-    $my_frame = $driver->findElement(WebDriverBy::xpath("//frame[@id='contentframe']"));
+    $my_frame = $driver->findElement(WebDriverBy::id('contentframe'));
     $driver->switchTo()->frame($my_frame);
-    // $my_frame = $driver->wait(3,250)->until(WebDriverExpectedCondition::frameToBeAvailableAndSwitchToIt(
-    //     WebDriverBy::xpath("//frame[@id='contentframe']")));
 
-    // to check whether able to find 'Logout' button in homepage after login
-    $checkHomepage = $driver->wait(3,250)->until(WebDriverExpectedCondition::elementTextContains(
-            WebDriverBy::xpath('//a[text()="Logout"]'), 'Logout'));
+    try{
+        // to check whether able to find 'Logout' button in homepage after login
+        $checkHomepage = $driver->wait(3,250)->until(WebDriverExpectedCondition::elementTextContains(
+        WebDriverBy::xpath('//a[text()="Logout"]'), 'Logout'));
 
-    if ($checkHomepage > 0){
-        echo $checkHomepage . " \n";
-        echo 'Login successfully!!';
-        // terminate the session and close the browser
-        $driver->quit();
-    }elseif ($checkHomepage = 0){
-        echo $checkHomepage . " \n";
-        throw new Exception("Element of 'Logout' not found!\n");
+        if ($checkHomepage > 0){
+            echo $checkHomepage . " \n";
+            echo 'Login successfully!!';
+            // terminate the session and close the browser
+            $driver->quit();
+        }
+    }catch(\Exception $e){
+        throw new Exception('Logout button not found');
     }
-
+    
 } catch (\Exception $e) {
     echo "[" . date_default_timezone_get() . ", " . date("l") . ", " . 
     date("Y-m-d h:i:sa") . '] Error - ' . $e->getMessage() . "\n";
