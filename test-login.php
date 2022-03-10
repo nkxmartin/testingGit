@@ -53,11 +53,11 @@ try {
         // $driver->findElement(WebDriverBy::id('captcha')) // find search input element
         // ->sendKeys('1111'); // fill the search box
 
-        $getCaptcha = $driver->findElement(WebDriverBy::id('captcha'))->getAttribute('value');
+       $getCaptcha = $driver->findElement(WebDriverBy::id('captcha'))->getAttribute('value');
 
         // validation for captcha fully entered
-        if (strlen($getCaptcha) == 4 && is_numeric($getCaptcha)) {
-            echo "Captcha entered: " . $getCaptcha . "\n";
+        if (strlen(trim($getCaptcha)) == 4 && is_numeric(trim($getCaptcha))) {
+            echo "Captcha entered: " .trim( $getCaptcha) . "\n";
             echo "Received Captcha\n";
             $driver->findElement(WebDriverBy::id('login'))->click();
 
@@ -81,11 +81,11 @@ try {
     }
 
     // validation timeout after captcha entered or left empty
-    if (strlen($getCaptcha) < 4 && strlen($getCaptcha) > 0) {
-        echo "Captcha entered: " . $getCaptcha . "\n";
+    if (strlen(trim($getCaptcha)) < 4 && strlen(trim($getCaptcha)) > 0) {
+        echo "Captcha entered: " .trim($getCaptcha) . "\n";
         throw new Exception("Captcha is invalid!");
     }
-    elseif (strlen($getCaptcha) == 0) {
+    elseif (strlen(trim($getCaptcha)) == 0) {
         throw new Exception("Captcha is empty!");
     }
 
