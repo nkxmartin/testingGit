@@ -56,7 +56,7 @@ try {
         $getCaptcha = $driver->findElement(WebDriverBy::id('captcha'))->getAttribute('value');
 
         // validation for captcha fully entered
-        if (strlen(trim($getCaptcha)) == 4) {
+        if (strlen($getCaptcha) == 4 && is_numeric($getCaptcha)) {
             echo "Captcha entered: " . $getCaptcha . "\n";
             echo "Received Captcha\n";
             $driver->findElement(WebDriverBy::id('login'))->click();
@@ -67,13 +67,12 @@ try {
             // to check error after clicked 'Login' button
             try {
                 $isLoginError = $driver->findElement(WebDriverBy::xpath('//div[@id="error"]'))->getText();
-
-                if (!empty($isLoginError)){
-                    throw new Exception();
+                if(!empty($isLoginError)){
+                    throw new Exception($isLoginError);
                 }
             }catch (\Exception $e){
                 if (!empty($isLoginError)){
-                    throw new Exception($isLoginError);
+                    throw new Exception($e);
                 }else{
                     break;
                 }
@@ -81,12 +80,12 @@ try {
         }
     }
 
-    // validation for captcha entered or empty
-    if (strlen(trim($getCaptcha)) < 4 && strlen(trim($getCaptcha)) != 0) {
+    // validation timeout after captcha entered or left empty
+    if (strlen($getCaptcha) < 4 && strlen($getCaptcha) > 0) {
         echo "Captcha entered: " . $getCaptcha . "\n";
         throw new Exception("Captcha is invalid!");
     }
-    elseif (strlen(trim($getCaptcha)) == 0) {
+    elseif (strlen($getCaptcha) == 0) {
         throw new Exception("Captcha is empty!");
     }
 
@@ -94,7 +93,7 @@ try {
     $driver->switchTo()->defaultContent();
 
     // find and switch the frame due to homepage having frame wrapping
-    $my_frame = $driver->findElement(WebDriverBy::id('contentframe'));
+    $my_frame = $driver->findElement(WebDriverBy::xpath("//frame[@id='contentframe']"));
     $driver->switchTo()->frame($my_frame);
 
     try{
@@ -103,7 +102,6 @@ try {
         WebDriverBy::xpath('//a[text()="Logout"]'), 'Logout'));
 
         if ($checkHomepage > 0){
-            echo $checkHomepage . " \n";
             echo 'Login successfully!!';
             // terminate the session and close the browser
             $driver->quit();
@@ -111,7 +109,7 @@ try {
     }catch(\Exception $e){
         throw new Exception('Logout button not found');
     }
-    
+
 } catch (\Exception $e) {
     echo "[" . date_default_timezone_get() . ", " . date("l") . ", " . 
     date("Y-m-d h:i:sa") . '] Error - ' . $e->getMessage() . "\n";
