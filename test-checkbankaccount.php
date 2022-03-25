@@ -111,30 +111,31 @@ try {
         throw new Exception('Logout button not found');
     }
 
-    //preg match to get dynamic ID from column and remove any character
+    // preg match to get dynamic ID in digits only from column
     $patternGetDynamicID = '/[^0-9]/';
 
     $driver->get('http://192.168.28.108/qasupport/operator.php?hdl=main&aot=bankaccount');
     sleep(2);
-    //get dynamic ID from the Column Name searched based on text
+    // get dynamic ID from the text name of the column
     $getouterHTMLByColumnName = $driver->findElement(
         WebDriverBy::xpath('//span[contains(normalize-space(text()),"Alias Name")]'))->getAttribute('ID');
 
-    //get int from ID
+    // get int from ID based on the column of the name selected
     echo '=========================================================================' . "\n";
     echo 'HTML ID:' . $getouterHTMLByColumnName . "\n";
     echo 'Column Name ID:' . $getColumnNameDynamicID = intval(preg_replace($patternGetDynamicID,'',$getouterHTMLByColumnName)) . "\n";
     echo '=========================================================================' . "\n";
-    
 
-    //get dynamic ID from the search box column based on $getouterHTMLByColumnName variable
+
+    // get dynamic ID from the search box column based on $getouterHTMLByColumnName variable
     $columnID = intval(($getColumnNameDynamicID - 1010) + 1);
     echo 'ID of the Search Box: ' . $columnID . "\n";
 
+    // indicate that particular Search Box based on the name of the column selected
     $getouterHTMLBySearchBox = $driver->findElement(
         WebDriverBy::cssSelector('div#filterBar-innerCt table:nth-of-type('. $columnID .') td:nth-child(2) input'))->getAttribute('ID');
 
-    //get int from ID
+    // get int from ID based on Search Box
     echo '=========================================================================' . "\n";
     echo 'HTML ID:' . $getouterHTMLBySearchBox . "\n";
     echo 'Search Box ID:' . $getSearchBoxDynamicID = intval(preg_replace($patternGetDynamicID,'',$getouterHTMLBySearchBox)) . "\n";
@@ -148,13 +149,16 @@ try {
     $getTextSearchBox = $driver->findElement(
         WebDriverBy::cssSelector('div#filterBar-innerCt table:nth-of-type('. $columnID .') td:nth-child(2) input'))
         ->getAttribute('value');
-        
+    
+    // to emulate as keyboard to enter to search and set lib above by "use Facebook\WebDriver\WebDriverKeys;"
     $driver->getKeyboard()->pressKey(WebDriverKeys::ENTER);
     sleep(3);
 
+    // display the text entered by robot
     $displayOneResult = $driver->findElement(
         WebDriverBy::xpath('//div[contains(normalize-space(text()),"Displaying")]'))->getText();
 
+    // check result whether is only 1 or more
     if (strpos($displayOneResult, '1 - 1 of 1' && !empty($getTextSearchBox))){
         echo "Text entered into search box: '" . $getTextSearchBox . "'\n";
         echo 'Result found!' . "\n";
