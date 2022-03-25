@@ -132,7 +132,7 @@ try {
     echo 'ID of the Search Box: ' . $columnID . "\n";
 
     $getouterHTMLBySearchBox = $driver->findElement(
-        WebDriverBy::cssSelector('div#filterBar-innerCt table:nth-of-type('. $columnID .') td:nth-of-child(2) input'))->getAttribute('ID');
+        WebDriverBy::cssSelector('div#filterBar-innerCt table:nth-of-type('. $columnID .') td:nth-child(2) input'))->getAttribute('ID');
 
     //get int from ID
     echo '=========================================================================' . "\n";
@@ -142,11 +142,11 @@ try {
 
     // fill up the selected search box 
     $driver->findElement(
-        WebDriverBy::cssSelector('div#filterBar-innerCt table:nth-of-type('. $columnID .') td:nth-of-child(2) input'))
+        WebDriverBy::cssSelector('div#filterBar-innerCt table:nth-of-type('. $columnID .') td:nth-child(2) input'))
         ->sendKeys('=HSB12345');
 
     $getTextSearchBox = $driver->findElement(
-        WebDriverBy::cssSelector('div#filterBar-innerCt table:nth-of-type('. $columnID .') td:nth-of-child(2) input'))
+        WebDriverBy::cssSelector('div#filterBar-innerCt table:nth-of-type('. $columnID .') td:nth-child(2) input'))
         ->getAttribute('value');
         
     $driver->getKeyboard()->pressKey(WebDriverKeys::ENTER);
